@@ -1,0 +1,55 @@
+<html>
+
+<head>
+    <title>Box</title>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <script src="../libs/gl-matrix/gl-matrix.js"></script>
+    <script src="../libs/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+    <script src=shapes.js></script>
+
+    <script type="text/javascript">
+        // Jquery that detects the state of rediness. Code inside the function will only run once the page DOM is ready for Javascript code to execute.
+        $(document).ready(
+            function () {
+                let canvas = document.getElementById("webglcanvas");
+
+                let gl = initWebGL(canvas);
+                initGL(gl, canvas);
+                initViewport(gl, canvas);
+                initShader(gl);
+                let width = 1600;
+                let height = 900;
+                let square = createSquare(gl);
+                let triangle = createTriangle(gl);
+                let diamond = createDiamond(gl);
+                let pacman = createPacman(gl,48);
+
+                mat4.identity(modelViewMatrix);
+                mat4.translate(modelViewMatrix, modelViewMatrix, [-.75, .75, -3.333]);
+                draw(gl, square);
+
+                mat4.identity(modelViewMatrix);
+                mat4.translate(modelViewMatrix, modelViewMatrix, [.75, .75, -3.333]);
+                draw(gl, triangle);
+
+                mat4.identity(modelViewMatrix);
+                mat4.translate(modelViewMatrix, modelViewMatrix, [-.75, -.75, -3.333]);
+                draw(gl, diamond);
+                
+                mat4.identity(modelViewMatrix);
+                mat4.translate(modelViewMatrix, modelViewMatrix, [.75, -.75, -3.333]);
+                draw(gl, pacman);
+                
+            }
+        );
+    </script>
+
+</head>
+
+<!-- All WebGL rendering takes place in a context. This structure is provided in the HTML5 Canvas element. -->
+
+<body>
+    <canvas id="webglcanvas" style="border: none;" width="1600 px" height="900px"></canvas>
+</body>
+
+</html>
