@@ -145,17 +145,30 @@ function draw(gl, objs)
     }
 }
 
-function createPyramid(gl, translation, rotationAxis,vertz,colorz,indexz) 
+function createPyramid(gl, translation, rotationAxis) 
 {   
+    let v = [
+
+        -2,-2, 0,
+         2,-2, 0,
+         2, 2, 0,
+        -2, 2, 0,
+         0, 0, 2  
+      ];
+
     //vertex input
-    let verts = vertz;
+   
+
+    let results = sierpinsky(v);
+
+    let verts = results[0];
 
     let vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 
     // Color data input
-    let vertexColors = colorz;
+    let vertexColors = results[1];
 
     let colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
@@ -165,7 +178,7 @@ function createPyramid(gl, translation, rotationAxis,vertz,colorz,indexz)
     let pyramidIndexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, pyramidIndexBuffer);
     //index input
-    let pyramidIndices = indexz;
+    let pyramidIndices = results[2];
 
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pyramidIndices), gl.STATIC_DRAW);
     
@@ -200,14 +213,15 @@ function update(glCtx, objs)
     objs.forEach(obj => obj.update())
 }
 
-function sierpinsky(glCtx){
+function sierpinsky(svertex,level){
 
-
-    let v = [];
+    //me falto tiempo ( estudio y trabajo)
+    //la ultima idea con lo que me quede ( queria probar en piramide de 5 puntos) fue usar sierpinsky (vertices necesarios par una piramide)
+    //dividir la distancia entre los vertices y con eso generar 5 piramides (deberia funcionar para 4 tambn) y llamar a la funcion nuevamente 5 veces, repetir hasta llegar al nivel requerido
     let c = [];
     let i = [];
 
-    let pyramid = createPyramid(glCtx,  [0, 0, -2], [0, 1, 0],v,c,i);
+
 
 }
 
@@ -219,9 +233,7 @@ function main()
     initViewport(glCtx, canvas);
     initGL(glCtx, canvas);
 
-    let sierp = sierpinsky(glCtx);
-
-    
+    let pyramid = createPyramid(glCtx,  [0, 0, -2], [0, 1, 0]);
 
     initShader(glCtx, vertexShaderSource, fragmentShaderSource);
 
