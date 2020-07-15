@@ -14,18 +14,17 @@
 		        let canvas = document.getElementById("webglcanvas");
 			    let gl = initWebGL(canvas);
 		        initViewport(gl, canvas);
-		        initGL(canvas);
-				let cube = createCube(gl,.5, [-4 , 0, -2], [1, 1, 1]);
+				initGL(canvas);
 				
-				let pyramid = createPyramid(gl,.5,[-2 , 0, -2], [0.1, 1.0, 0.2]);
-				/*
-				let dodeca = createDodecahedron(gl,[0 , 0, -2], [-0.4, 1.0, 0.1]);
-				let octa = createOctahedron(gl,[2 , 0, -2], [0, 1, 0]);
-				*/
+				let cube = createCube(gl,.5, [-4 , 0, -2], [1, 1, 1]);
+				let pyramid = createPyramid(gl,.2,[-2 , 0, -2], [0.1, 1.0, 0.2]);
+				//let dodeca = createDodecahedron(gl,[0 , 0, -2], [-0.4, 1.0, 0.1]);
+				let octa = createOctahedron(gl,.5,[2 , 0, -2], [0, 1, 0]);
+
 				initShader(gl);
 				
 				//run(gl, [cube, piramid, dodeca, octa]);
-				run(gl, [cube,pyramid]);
+				run(gl, [cube,pyramid,octa]);
 			}
 	);
 
