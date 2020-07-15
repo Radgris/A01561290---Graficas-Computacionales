@@ -325,7 +325,7 @@ function createPyramid(gl,scale, translation, rotationAxis){
     
     let pyramid = {
             buffer:vertexBuffer, colorBuffer:colorBuffer, indices:pyramidIndexBuffer,
-            vertSize:3, nVerts:30, colorSize:4, nColors: 30,
+            vertSize:3, nVerts:verts.length/3, colorSize:4, nColors: vertexColors.length / 4,
             primtype:gl.TRIANGLES, modelViewMatrix: mat4.create(), currentTime : Date.now()};
 
     mat4.translate(pyramid.modelViewMatrix, pyramid.modelViewMatrix, translation);
