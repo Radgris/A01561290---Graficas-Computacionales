@@ -6,69 +6,107 @@ let renderer = null,
     camera = null,
     sunGroup = null,
     sun = null,
+    asteroidGroup = null,
     celestials = [
         mercury = {
             group: null,
             distance: .39,
             url: "../images/2k_mercury.jpg",
             size: .38,
-            celestial: null
+            celestial: null,
+            speed: 47.87,
+            moons: 0,
+            moonArray: [],
+            //moonGroup: null
+
         },
         venus = {
             group: null,
             distance: .72,
             url: "../images/2k_venus_surface.jpg",
             size: .95,
-            celestial: null
+            celestial: null,
+            speed: 35.02,
+            moons: 0,
+            moonArray: [],
+            //moonGroup: null
         },
         earth = {
             group: null,
             distance: 1,
             url: "../images/earth_atmos_2048.jpg",
             size: 1,
-            celestial: null
+            celestial: null,
+            speed: 29.78,
+            moons: 1,
+            moonArray: [],
+            moonGroup: null
         },
         mars = {
             group: null,
             distance: 1.524,
             url: "../images/2k_mars.jpg",
             size: .53,
-            celestial: null
+            celestial: null,
+            speed: 24.077,
+            moons: 2,
+            moonArray: [],
+            moonGroup: null
         },
         jupiter = {
             group: null,
             distance: 5.203,
             url: "../images/2k_jupiter.jpg",
             size: 11.2,
-            celestial: null
+            celestial: null,
+            speed: 13.07,
+            moons: 79,
+            moonArray: [],
+            moonGroup: null
         },
         saturn = {
             group: null,
             distance: 9.539,
             url: "../images/2k_saturn.jpg",
             size: 9.54,
-            celestial: null
+            celestial: null,
+            speed: 9.69,
+            moons: 82,
+            moonArray: [],
+            moonGroup: null
         },
         uranus = {
             group: null,
             distance: 19.18,
             url: "../images/2k_uranus.jpg",
             size: 4,
-            celestial: null
+            celestial: null,
+            speed: 6.81,
+            moons: 27,
+            moonArray: [],
+            moonGroup: null
         },
         neptune = {
             group: null,
             distance: 30.06,
             url: "../images/2k_neptune.jpg",
             size: 3.88,
-            celestial: null
+            celestial: null,
+            speed: 5.43,
+            moons: 14,
+            moonArray: [],
+            moonGroup: null
         },
         pluto = {
             group: null,
             distance: 39.53,
             url: "../images/plutomap1k.jpg",
             size: .185,
-            celestial: null
+            celestial: null,
+            speed: 4.74,
+            moons: 5,
+            moonArray: [],
+            moonGroup: null
         }
     ],
     moon = {
@@ -76,7 +114,8 @@ let renderer = null,
         distance: .39,
         url: "../images/moon_1024.jpg",
         size: .27,
-        celestial: null
+        celestial: null,
+        speed: null
     };
 
 let duration = 5000; // ms
@@ -95,9 +134,17 @@ function animate() {
 
     //planets
     celestials.forEach(planet => {
-        planet.celestial.rotation.y -= angle / 2;
+        planet.group.rotation.y -= angle / 2 * (planet.speed / 25);
         planet.celestial.rotation.x += angle;
 
+        //moons
+        if(planet.moons> 0){
+            
+            planet.moonGroup.rotation.y -= angle / 2 * (planet.speed / 25);
+            planet.moonArray.forEach(moon => {
+                moon.rotation.x += angle;
+            });
+        }
     });
 }
 
@@ -106,7 +153,20 @@ function run() {
         run();
     });
     renderer.render(scene, camera);
-    animate();
+
+    //orbit Controls
+    var orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    orbitControls.enabled = true;
+    orbitControls.enableZoom = true;
+    orbitControls.enablePan = true;
+    orbitControls.autoRotate = true;
+    orbitControls.enableKeys = true;
+    orbitControls.panSpeed = 0.005;
+    orbitControls.zoomSpeed = 0.05;
+    orbitControls.rotateSpped = 0.005;
+    orbitControls.keyPanSpeed = 0.005;
+    orbitControls.maxZoom = 2.0;
+    animate(orbitControls);
 }
 
 function createScene(canvas) {
@@ -116,9 +176,11 @@ function createScene(canvas) {
     });
     renderer.setSize(canvas.width, canvas.height);
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0.2, 0.2, 0.2);
+
     camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 4000);
-    camera.position.z = 10;
+    camera.position.z = 50;
+    camera.position.y = 15;
+
     scene.add(camera);
     let light = new THREE.DirectionalLight(0xffffff, 1.0);
     light.position.set(-.5, .2, 1);
@@ -132,11 +194,9 @@ function createScene(canvas) {
         scene.background = texture;
     });
 
-
-
     createCelestials();
     scene.add(sunGroup);
-    addMouseHandler(canvas, sunGroup);
+    //addMouseHandler(canvas, sunGroup);
 }
 
 
@@ -144,7 +204,7 @@ function createCelestials() {
 
     //sun{size:109, distance:0} 
     sunGroup = new THREE.Object3D;
-    sunGroup.position.set(0, 0, -4);
+    sunGroup.position.set(0, 0, 0);
     let textureUrl = "../images/2k_sun.jpg";
     let texture = new THREE.TextureLoader().load(textureUrl);
     let material = new THREE.MeshPhongMaterial({
@@ -163,7 +223,7 @@ function createCelestials() {
 
 function createCelestial(planet) {
     planet.group = new THREE.Object3D;
-    planet.group.position.set(0, 0, planet.distance * globaldistance);
+    planet.group.position.set(0, 0, 0);
     let textureUrl = planet.url;
     let texture = new THREE.TextureLoader().load(textureUrl);
     let material = new THREE.MeshPhongMaterial({
@@ -172,6 +232,58 @@ function createCelestial(planet) {
     //let geometry = new THREE.SphereGeometry(planet.size*globalsize, 20, 20);
     let geometry = new THREE.SphereGeometry(.5, 20, 20);
     planet.celestial = new THREE.Mesh(geometry, material);
+    planet.celestial.position.set(0, 0, planet.distance * globaldistance);
     planet.group.add(planet.celestial)
     sunGroup.add(planet.group);
+    createMoons(planet);
+    createRingtrayectory(planet);
+    createAsteroidBelt();
+
+}
+
+function createMoons(planet) {
+    let mon = null;
+    mooncount = planet.moons;
+
+    planet.group.add(planet.moonGroup)
+
+    for (i = 0; i < mooncount; i++) {
+        rand1 = getRandomFloat(-1, 1);
+        rand2 = getRandomFloat(-1, 1);
+        rand3 = getRandomFloat(-1, 1);
+        let textureUrl = moon.url;
+        let texture = new THREE.TextureLoader().load(textureUrl);
+        let material = new THREE.MeshPhongMaterial({
+            map: texture
+        });
+        let geometry = new THREE.SphereGeometry(.1, 20, 20);
+        mon = new THREE.Mesh(geometry, material);
+        planet.moonArray.push(mon);
+
+        mon.position.set(rand1, rand2, rand3 + (planet.distance * globaldistance));
+        
+        planet.moonGroup.add(mon);
+    }
+
+
+}
+
+function createRingtrayectory(planet) {
+    let inner = (planet.distance * globaldistance);
+    var geometry = new THREE.TorusGeometry(inner, .1, 16, 100);
+    var material = new THREE.MeshBasicMaterial({
+        color: 0xffff00
+    });
+    var torus = new THREE.Mesh(geometry, material);
+    torus.rotation.x = Math.PI / 2;
+    scene.add(torus);
+}
+
+function createAsteroidBelt() {
+
+
+}
+
+function getRandomFloat(min, max) {
+    return Math.random() * (max - min) + min;
 }
