@@ -6,7 +6,6 @@ let renderer = null,
     camera = null,
     sunGroup = null,
     sun = null,
-    asteroidGroup = null,
     celestials = [
         mercury = {
             group: null,
@@ -16,8 +15,7 @@ let renderer = null,
             celestial: null,
             speed: 47.87,
             moons: 0,
-            moonArray: [],
-            //moonGroup: null
+            moonArray:[]
 
         },
         venus = {
@@ -28,8 +26,7 @@ let renderer = null,
             celestial: null,
             speed: 35.02,
             moons: 0,
-            moonArray: [],
-            //moonGroup: null
+            moonArray: []
         },
         earth = {
             group: null,
@@ -39,8 +36,7 @@ let renderer = null,
             celestial: null,
             speed: 29.78,
             moons: 1,
-            moonArray: [],
-            moonGroup: null
+            moonArray: []
         },
         mars = {
             group: null,
@@ -50,8 +46,7 @@ let renderer = null,
             celestial: null,
             speed: 24.077,
             moons: 2,
-            moonArray: [],
-            moonGroup: null
+            moonArray: []
         },
         jupiter = {
             group: null,
@@ -61,8 +56,7 @@ let renderer = null,
             celestial: null,
             speed: 13.07,
             moons: 79,
-            moonArray: [],
-            moonGroup: null
+            moonArray: []
         },
         saturn = {
             group: null,
@@ -72,8 +66,7 @@ let renderer = null,
             celestial: null,
             speed: 9.69,
             moons: 82,
-            moonArray: [],
-            moonGroup: null
+            moonArray: []
         },
         uranus = {
             group: null,
@@ -83,8 +76,7 @@ let renderer = null,
             celestial: null,
             speed: 6.81,
             moons: 27,
-            moonArray: [],
-            moonGroup: null
+            moonArray: []
         },
         neptune = {
             group: null,
@@ -94,8 +86,7 @@ let renderer = null,
             celestial: null,
             speed: 5.43,
             moons: 14,
-            moonArray: [],
-            moonGroup: null
+            moonArray: []
         },
         pluto = {
             group: null,
@@ -105,8 +96,7 @@ let renderer = null,
             celestial: null,
             speed: 4.74,
             moons: 5,
-            moonArray: [],
-            moonGroup: null
+            moonArray: []
         }
     ],
     moon = {
@@ -136,15 +126,11 @@ function animate() {
     celestials.forEach(planet => {
         planet.group.rotation.y -= angle / 2 * (planet.speed / 25);
         planet.celestial.rotation.x += angle;
+        planet.moonArray.forEach(moon => {
+            moon.rotation.y -= angle / 2 * (planet.speed / 25);
+            moon.rotation.x += angle;
+        });
 
-        //moons
-        if(planet.moons> 0){
-            
-            planet.moonGroup.rotation.y -= angle / 2 * (planet.speed / 25);
-            planet.moonArray.forEach(moon => {
-                moon.rotation.x += angle;
-            });
-        }
     });
 }
 
@@ -155,9 +141,9 @@ function run() {
     renderer.render(scene, camera);
 
     //orbit Controls
-    var orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    var orbitControls = new THREE.OrbitControls( camera, renderer.domElement );
     orbitControls.enabled = true;
-    orbitControls.enableZoom = true;
+    orbitControls.enableZoom =true;
     orbitControls.enablePan = true;
     orbitControls.autoRotate = true;
     orbitControls.enableKeys = true;
@@ -166,7 +152,7 @@ function run() {
     orbitControls.rotateSpped = 0.005;
     orbitControls.keyPanSpeed = 0.005;
     orbitControls.maxZoom = 2.0;
-    animate(orbitControls);
+    animate(orbitControls); 
 }
 
 function createScene(canvas) {
@@ -237,7 +223,7 @@ function createCelestial(planet) {
     sunGroup.add(planet.group);
     createMoons(planet);
     createRingtrayectory(planet);
-    createAsteroidBelt();
+
 
 }
 
@@ -245,45 +231,35 @@ function createMoons(planet) {
     let mon = null;
     mooncount = planet.moons;
 
-    planet.group.add(planet.moonGroup)
-
-    for (i = 0; i < mooncount; i++) {
-        rand1 = getRandomFloat(-1, 1);
-        rand2 = getRandomFloat(-1, 1);
-        rand3 = getRandomFloat(-1, 1);
+    for (i = 0; i < mooncount; i++) 
+    {
+        rand1 = getRandomFloat(-1,1);
+        rand2 = getRandomFloat(-1,1);
+        rand3 = getRandomFloat(-1,1);
         let textureUrl = moon.url;
-        let texture = new THREE.TextureLoader().load(textureUrl);
-        let material = new THREE.MeshPhongMaterial({
-            map: texture
-        });
-        let geometry = new THREE.SphereGeometry(.1, 20, 20);
-        mon = new THREE.Mesh(geometry, material);
-        planet.moonArray.push(mon);
-
-        mon.position.set(rand1, rand2, rand3 + (planet.distance * globaldistance));
-        
-        planet.moonGroup.add(mon);
-    }
-
-
-}
-
-function createRingtrayectory(planet) {
-    let inner = (planet.distance * globaldistance);
-    var geometry = new THREE.TorusGeometry(inner, .1, 16, 100);
-    var material = new THREE.MeshBasicMaterial({
-        color: 0xffff00
+    let texture = new THREE.TextureLoader().load(textureUrl);
+    let material = new THREE.MeshPhongMaterial({
+        map: texture
     });
-    var torus = new THREE.Mesh(geometry, material);
-    torus.rotation.x = Math.PI / 2;
-    scene.add(torus);
+    let geometry = new THREE.SphereGeometry(.1, 20, 20);
+    mon = new THREE.Mesh(geometry, material);
+    planet.moonArray.push(mon);
+
+    mon.position.set(rand1, rand2, rand3 + (planet.distance * globaldistance));
+    planet.group.add(mon)
+    }
 }
 
-function createAsteroidBelt() {
-
-
+function createRingtrayectory(planet)
+{   
+    let inner = (planet.distance * globaldistance);
+    var geometry = new THREE.TorusGeometry(inner,.1,16,100);
+    var material = new THREE.MeshBasicMaterial( { color: 0xffff00} );
+    var torus = new THREE.Mesh( geometry, material );
+    torus.rotation.x= Math.PI /2;
+    scene.add( torus );
 }
 
 function getRandomFloat(min, max) {
     return Math.random() * (max - min) + min;
-}
+  }
